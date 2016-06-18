@@ -27,9 +27,13 @@ class Snippet(models.Model):
     class Meta:
         ordering = ('created',)
 
-    # Use pygments library to higlight code snippet
+    # Use pygments library to highlight code snippet
 
     def save(self, *args, **kwargs):
+        """
+        Use the `pygments` library to create a highlighted HTML
+        representation of the code snippet.
+        """
         lexer = get_lexer_by_name(self.language)
         linenos = self.linenos and 'table' or False
         options = self.title and {'title':self.title} or {}

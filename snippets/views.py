@@ -7,22 +7,29 @@ from rest_framework import permissions
 from snippets.permissions import IsOwnerOrReadOnly
 # Create your views here.
 
+#  #4 part:
+#  1.Code snippets are always associated with a creator.
+#  2.Only authenticated users may create snippets. done
+#  3.Only the creator of a snippet may update or delete it. done
+#  4.Unauthenticated requests should have full read-only access.
+
 
 class SnippetList(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          )
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, # authorised != owner
+                          IsOwnerOrReadOnly)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer): # отправить owner с модели вместе с сериалайзером
         serializer.save(owner=self.request.user)
+        # The user isn't sent as part of the serialized representation,
 
 
 class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          IsOwnerOrReadOnly)
+                          IsOwnerOrReadOnly)  # Unauthorised users can't delete snippets
 
 
 class UserList(generics.ListAPIView):
@@ -33,6 +40,8 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
 # class SnippetList(mixins.ListModelMixin,
 #                   mixins.CreateModelMixin,
 #                   generics.GenericAPIView):

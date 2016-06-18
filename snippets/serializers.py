@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -22,11 +23,12 @@ class SnippetSerializer(serializers.ModelSerializer):
 
         return instance
 
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')  # делает поле owner необязательным при
+    # запросе, а исходит из того кто делает запрос
 
 
 class UserSerializer(serializers.ModelSerializer):
-    snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
+    # snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
 
     class Meta:
         model = User
